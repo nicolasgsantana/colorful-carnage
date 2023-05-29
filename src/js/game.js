@@ -7,6 +7,9 @@ canvas.height = innerHeight
 const projectiles = []
 const enemies = []
 
+const playerColor = 'rgb(254, 255, 254)'
+const enemyColors = ['rgb(255, 0, 34)', 'rgb(199, 239, 0)', 'rgb(84, 19, 136)']
+
 class Player {
     constructor(x, y, radius, color) {
         this.x = x
@@ -86,7 +89,7 @@ function spawnEnemies() {
         }
 
 
-        const color = 'green'
+        const color = enemyColors[Math.floor(Math.random() * enemyColors.length)]
         const angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x)
         const velocity = {
             x: Math.cos(angle),
@@ -100,8 +103,8 @@ function spawnEnemies() {
 let animationId
 function animate() {
     animationId = requestAnimationFrame(animate)
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
 
     projectiles.forEach((projectile, index) => {
         projectile.update()
@@ -143,16 +146,15 @@ function animate() {
 
 }
 
-const player = new Player(canvas.width / 2, canvas.height / 2, 30, 'blue')
+const player = new Player(canvas.width / 2, canvas.height / 2, 15, playerColor)
 
 window.addEventListener('click', (event) => {
-    console.log(projectiles)
     const angle = Math.atan2(event.clientY - canvas.height / 2, event.clientX - canvas.width / 2)
     const velocity = {
-        x: Math.cos(angle),
-        y: Math.sin(angle)
+        x: Math.cos(angle) * 6,
+        y: Math.sin(angle) * 6
     }
-    projectiles.push(new Projectile(canvas.width / 2, canvas.height / 2, 5, 'red', velocity))
+    projectiles.push(new Projectile(canvas.width / 2, canvas.height / 2, 5, playerColor, velocity))
 })
 
 animate()
