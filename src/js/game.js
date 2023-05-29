@@ -103,14 +103,26 @@ function animate() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-    projectiles.forEach(projectile => {
+    projectiles.forEach((projectile, index) => {
         projectile.update()
+
+        // remove from edges of screen
+        if (projectile.x + projectile.radius < 0 ||
+            projectile.x - projectile.radius > canvas.width ||
+            projectile.y + projectile.radius < 0 ||
+            projectile.y - projectile.radius > canvas.height) {
+            setTimeout(() => {
+                projectiles.splice(index, 1)
+            }, 0)
+        }
+
     })
     enemies.forEach((enemy, eIndex) => {
         enemy.update()
 
         const distance = Math.hypot(player.x - enemy.x, player.y - enemy.y)
         if (distance - enemy.radius - player.radius < 1) {
+            // end game
             cancelAnimationFrame(animationId)
         }
 
@@ -134,6 +146,7 @@ function animate() {
 const player = new Player(canvas.width / 2, canvas.height / 2, 30, 'blue')
 
 window.addEventListener('click', (event) => {
+    console.log(projectiles)
     const angle = Math.atan2(event.clientY - canvas.height / 2, event.clientX - canvas.width / 2)
     const velocity = {
         x: Math.cos(angle),
