@@ -5,6 +5,8 @@ canvas.width = innerWidth
 canvas.height = innerHeight
 
 const scoreElement = document.querySelector('#scoreElement')
+const startGameBtn = document.querySelector('#startGameBtn')
+const modalElement = document.querySelector('#modalElement')
 
 const projectiles = []
 const enemies = []
@@ -222,5 +224,9 @@ window.addEventListener('click', (event) => {
     projectiles.push(new Projectile(canvas.width / 2, canvas.height / 2, 5, playerColor, velocity))
 })
 
-animate()
-spawnEnemies()
+startGameBtn.addEventListener('click', () => {
+    animate()
+    spawnEnemies()
+    modalElement.style.display = 'none'
+})
+
