@@ -4,6 +4,8 @@ const ctx = canvas.getContext('2d')
 canvas.width = innerWidth
 canvas.height = innerHeight
 
+const scoreElement = document.querySelector('#scoreElement')
+
 const projectiles = []
 const enemies = []
 const particles = []
@@ -133,6 +135,7 @@ function spawnEnemies() {
 }
 
 let animationId
+let score = 0
 function animate() {
     animationId = requestAnimationFrame(animate)
     ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
@@ -141,7 +144,7 @@ function animate() {
     particles.forEach((particle, index) => {
         if (particle.alpha <= 0) {
             setTimeout(() => {
-                particles.splice(index, 5)
+                particles.splice(index, 1)
             }, 0)
         }
         else {
@@ -183,6 +186,9 @@ function animate() {
                 }
 
                 if (enemy.radius - 10 > 6) {
+                    score += 100
+                    scoreElement.innerHTML = score
+
                     gsap.to(enemy, {
                         radius: enemy.radius - 10
                     })
@@ -190,6 +196,8 @@ function animate() {
                         projectiles.splice(pIndex, 1)
                     }, 0)
                 } else {
+                    score += 250
+                    scoreElement.innerHTML = score
                     setTimeout(() => {
                         enemies.splice(eIndex, 1)
                         projectiles.splice(pIndex, 1)
@@ -201,9 +209,6 @@ function animate() {
 
     player.draw()
 
-    console.log(projectiles)
-    console.log(particles)
-    console.log(enemies)
 }
 
 const player = new Player(canvas.width / 2, canvas.height / 2, 15, playerColor)
