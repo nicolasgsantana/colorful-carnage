@@ -133,10 +133,19 @@ function animate() {
             const distance = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y)
 
             if (distance - enemy.radius - projectile.radius < 1) {
-                setTimeout(() => {
-                    enemies.splice(eIndex, 1)
-                    projectiles.splice(pIndex, 1)
-                }, 0)
+                if (enemy.radius - 10 > 6) {
+                    gsap.to(enemy, {
+                        radius: enemy.radius - 10
+                    })
+                    setTimeout(() => {
+                        projectiles.splice(pIndex, 1)
+                    }, 0)
+                } else {
+                    setTimeout(() => {
+                        enemies.splice(eIndex, 1)
+                        projectiles.splice(pIndex, 1)
+                    }, 0)
+                }
             }
         })
     })
