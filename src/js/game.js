@@ -7,10 +7,7 @@ canvas.height = innerHeight
 const scoreElement = document.querySelector('#scoreElement')
 const startGameBtn = document.querySelector('#startGameBtn')
 const modalElement = document.querySelector('#modalElement')
-
-const projectiles = []
-const enemies = []
-const particles = []
+const bigScoreElement = document.querySelector('#bigScoreElement')
 
 const playerColor = 'rgb(254, 255, 254)'
 const enemyColors = ['rgb(255, 0, 34)', 'rgb(199, 239, 0)', 'rgb(84, 19, 136)']
@@ -30,6 +27,21 @@ class Player {
         ctx.fillStyle = this.color
         ctx.fill()
     }
+}
+
+let projectiles = []
+let enemies = []
+let particles = []
+let player = new Player(canvas.width / 2, canvas.height / 2, 15, playerColor)
+let score = 0
+
+function init() {
+    projectiles = []
+    enemies = []
+    particles = []
+    player = new Player(canvas.width / 2, canvas.height / 2, 15, playerColor)
+    score = 0
+    scoreElement.innerHTML = score
 }
 
 class Projectile {
@@ -109,8 +121,9 @@ class Particle {
     }
 }
 
+let spawnEnemiesInterval
 function spawnEnemies() {
-    setInterval(() => {
+    spawnEnemiesInterval = setInterval(() => {
         const radius = (Math.random() * (30 - 6)) + 6
         let x
         let y
@@ -137,7 +150,6 @@ function spawnEnemies() {
 }
 
 let animationId
-let score = 0
 function animate() {
     animationId = requestAnimationFrame(animate)
     ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
@@ -176,6 +188,9 @@ function animate() {
         if (distance - enemy.radius - player.radius < 1) {
             // end game
             cancelAnimationFrame(animationId)
+            clearInterval(spawnEnemiesInterval)
+            modalElement.style.display = 'flex'
+            bigScoreElement.innerHTML = score
         }
 
         projectiles.forEach((projectile, pIndex) => {
@@ -213,8 +228,6 @@ function animate() {
 
 }
 
-const player = new Player(canvas.width / 2, canvas.height / 2, 15, playerColor)
-
 window.addEventListener('click', (event) => {
     const angle = Math.atan2(event.clientY - canvas.height / 2, event.clientX - canvas.width / 2)
     const velocity = {
@@ -225,6 +238,7 @@ window.addEventListener('click', (event) => {
 })
 
 startGameBtn.addEventListener('click', () => {
+    init()
     animate()
     spawnEnemies()
     modalElement.style.display = 'none'
