@@ -6,6 +6,7 @@ canvas.height = innerHeight
 
 const projectiles = []
 const enemies = []
+const particles = []
 
 const playerColor = 'rgb(254, 255, 254)'
 const enemyColors = ['rgb(255, 0, 34)', 'rgb(199, 239, 0)', 'rgb(84, 19, 136)']
@@ -73,6 +74,37 @@ class Enemy {
     }
 }
 
+const friction = 0.99
+class Particle {
+    constructor(x, y, radius, color, velocity) {
+        this.x = x
+        this.y = y
+        this.radius = radius
+        this.color = color
+        this.velocity = velocity
+        this.alpha = 1
+    }
+
+    draw() {
+        ctx.save()
+        ctx.globalAlpha = this.alpha
+        ctx.beginPath()
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true)
+        ctx.fillStyle = this.color
+        ctx.fill()
+        ctx.restore()
+    }
+
+    update() {
+        this.draw()
+        this.velocity.x *= friction
+        this.velocity.y *= friction
+        this.x += this.velocity.x
+        this.y += this.velocity.y
+        this.alpha -= 0.01
+    }
+}
+
 function spawnEnemies() {
     setInterval(() => {
         const radius = (Math.random() * (30 - 6)) + 6
@@ -106,6 +138,18 @@ function animate() {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
+    particles.forEach((particle, index) => {
+        if (particle.alpha <= 0) {
+            setTimeout(() => {
+                particles.splice(index, 5)
+            }, 0)
+        }
+        else {
+            particle.update()
+        }
+
+    })
+
     projectiles.forEach((projectile, index) => {
         projectile.update()
 
@@ -133,6 +177,11 @@ function animate() {
             const distance = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y)
 
             if (distance - enemy.radius - projectile.radius < 1) {
+
+                for (let i = 0; i < enemy.radius * 2; i++) {
+                    particles.push(new Particle(projectile.x, projectile.y, Math.random() * 2, enemy.color, { x: (Math.random() - 0.5) * (Math.random() * 8), y: (Math.random() - 0.5) * (Math.random() * 8) }))
+                }
+
                 if (enemy.radius - 10 > 6) {
                     gsap.to(enemy, {
                         radius: enemy.radius - 10
@@ -152,7 +201,9 @@ function animate() {
 
     player.draw()
 
-
+    console.log(projectiles)
+    console.log(particles)
+    console.log(enemies)
 }
 
 const player = new Player(canvas.width / 2, canvas.height / 2, 15, playerColor)
